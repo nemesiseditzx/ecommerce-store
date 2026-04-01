@@ -33,3 +33,10 @@ def create_order(order: dict):
     orders.append(order)
 
     return {"order_id": order_id}
+
+@app.get("/orders/{id}")
+def get_order(id: int):
+    for o in orders:
+        if o["id"] == id:
+            return o
+    return {"error": "Not found"}

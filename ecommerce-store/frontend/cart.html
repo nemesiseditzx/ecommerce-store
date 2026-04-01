@@ -1,66 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Cart</title>
+<h1>Cart</h1>
 
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      background: #f9fafb;
-    }
+<div id="c"></div>
 
-    .item {
-      background: white;
-      margin: 10px auto;
-      padding: 10px;
-      width: 250px;
-      border-radius: 10px;
-    }
-
-    button {
-      background: #2563EB;
-      color: white;
-      padding: 8px;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
-</head>
-
-<body>
-
-<h1>🛒 Your Cart</h1>
-
-<div id="cart"></div>
-
-<h2 id="total"></h2>
-
-<button onclick="checkout()">Proceed to Checkout</button>
+<button onclick="go()">Checkout</button>
 
 <script>
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let container = document.getElementById("cart");
+let cart = JSON.parse(localStorage.getItem("cart"))||[];
+let t=0;
 
-let total = 0;
-
-cart.forEach(item => {
-  total += item.price;
-
-  container.innerHTML += `
-    <div class="item">
-      <p>${item.name}</p>
-      <p>$${item.price}</p>
-    </div>
-  `;
+cart.forEach(i=>{
+  t+=i.price;
+  c.innerHTML+=`<p>${i.name} $${i.price}</p>`;
 });
 
-document.getElementById("total").innerText = "Total: $" + total;
+c.innerHTML+=`<h3>Total $${t}</h3>`;
 
-function checkout() {
-  window.location.href = "checkout.html";
-}
+function go(){location.href="checkout.html"}
 </script>
-
-</body>
-</html>

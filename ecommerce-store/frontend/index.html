@@ -1,97 +1,34 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>My Store</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #f9fafb;
-      text-align: center;
-    }
-
-    h1 {
-      margin: 20px;
-    }
-
-    a {
-      display: inline-block;
-      margin-bottom: 20px;
-      text-decoration: none;
-      font-weight: bold;
-      color: #2563EB;
-    }
-
-    #products {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      width: 200px;
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    }
-
-    button {
-      background: #2563EB;
-      color: white;
-      border: none;
-      padding: 8px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  </style>
-</head>
-
-<body>
-
 <h1>🛍️ My Store</h1>
 
-<!-- ✅ ADD THIS LINE HERE -->
-<a href="cart.html">🛒 View Cart</a>
-<a href="track.html">📦 Track Order</a>
-  
+<a href="cart.html">🛒 Cart</a> |
+<a href="track.html">📦 Track</a>
+
 <div id="products"></div>
 
 <script>
-const API = "https://ecommerce-store-production-cca7.up.railway.app";
+const API = "https://your-railway-url";
 
-async function loadProducts() {
-  const res = await fetch(API + "/products");
-  const data = await res.json();
+async function load(){
+  let r = await fetch(API+"/products");
+  let d = await r.json();
 
-  const container = document.getElementById("products");
-
-  data.forEach(p => {
-    container.innerHTML += `
-      <div class="card">
+  d.forEach(p=>{
+    products.innerHTML += `
+      <div>
         <h3>${p.name}</h3>
         <p>$${p.price}</p>
-        <button onclick="addToCart('${p.name}', ${p.price})">
-          Add to Cart
-        </button>
+        <button onclick="add('${p.name}',${p.price})">Add</button>
       </div>
     `;
   });
 }
 
-function addToCart(name, price) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  cart.push({ name, price });
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  alert("Added to cart ✅");
+function add(n,p){
+  let c = JSON.parse(localStorage.getItem("cart"))||[];
+  c.push({name:n,price:p});
+  localStorage.setItem("cart",JSON.stringify(c));
+  alert("Added");
 }
 
-loadProducts();
+load();
 </script>
-
-</body>
-</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f9fafb;
+    }
+
+    .order {
+      background: white;
+      margin: 10px auto;
+      padding: 10px;
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📊 Admin Panel</h1>
+
+<div id="orders"></div>
+
+<script>
+const API = "https://ecommerce-store-production-cca7.up.railway.app";
+
+async function loadOrders() {
+  const res = await fetch(API + "/orders/1"); // temporary test
+  const data = await res.json();
+
+  const container = document.getElementById("orders");
+
+  container.innerHTML = `
+    <div class="order">
+      <p>ID: ${data.id}</p>
+      <p>Status: ${data.order_status}</p>
+      <button onclick="updateStatus(${data.id})">Mark as Shipped</button>
+    </div>
+  `;
+}
+
+function updateStatus(id) {
+  alert("Next step: backend update 🔥");
+}
+
+loadOrders();
+</script>
+
+</body>
+</html>

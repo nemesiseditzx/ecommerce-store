@@ -1,118 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Checkout</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      background: #f9fafb;
-    }
-
-    input, select {
-      display: block;
-      margin: 10px auto;
-      padding: 10px;
-      width: 250px;
-    }
-
-    button {
-      background: #2563EB;
-      color: white;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-    }
-  </style>
-</head>
-
-<body>
-
 <h1>Checkout</h1>
 
-<input id="name" placeholder="Your Name">
+<input id="name" placeholder="Name">
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
+<input id="address" placeholder="Address">
 
-<!-- ✅ ONLY ONE TYPE SELECT -->
-<select id="type" onchange="togglePayment()">
+<select id="type">
   <option value="delivery">Delivery</option>
-  <option value="pickup">Store Pickup</option>
+  <option value="pickup">Pickup</option>
 </select>
 
-<input id="address" placeholder="Address (for delivery only)">
-
-<!-- ✅ Payment only for pickup -->
-
-<button onclick="placeOrder()">Place Order</button>
+<button onclick="pay()">Place Order</button>
 
 <script>
-const API = "https://ecommerce-store-production-cca7.up.railway.app";
+const API="https://your-railway-url";
 
-function togglePayment() {
-  const type = document.getElementById("type").value;
-  const paymentBox = document.getElementById("paymentBox");
+function pay(){
+  let cart=JSON.parse(localStorage.getItem("cart"))||[];
 
-  if (type === "pickup") {
-    paymentBox.style.display = "block";
-  } else {
-    paymentBox.style.display = "none";
-  }
-}
-
-function placeOrder() {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  if (cart.length === 0) {
-    alert("Your cart is empty ❌");
-    return;
-  }
-
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let email = document.getElementById("email").value;
-  let address = document.getElementById("address").value;
-  let type = document.getElementById("type").value;
-
-  if (!name || !phone || !email) {
-    alert("Please fill all required fields ❌");
-    return;
-  }
-
-  if (type === "delivery" && !address) {
-    alert("Please enter delivery address ❌");
-    return;
-  }
-
-  let order = {
-    customer_name: name,
-    phone: phone,
-    email: email,
-    address: address,
-    items: cart,
-    total: cart.reduce((sum, i) => sum + i.price, 0),
-    order_type: type
+  let o={
+    customer_name:name.value,
+    phone:phone.value,
+    email:email.value,
+    address:address.value,
+    items:cart,
+    total:cart.reduce((a,b)=>a+b.price,0),
+    order_type:type.value
   };
 
-  // 🔥 IMPORTANT CHANGE (STRIPE FLOW)
-  fetch("https://ecommerce-store-production-cca7.up.railway.app/create-checkout-session", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(order)
+  fetch(API+"/checkout",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(o)
   })
-  .then(res => res.json())
-  .then(data => {
-    // 🚀 Redirect to Stripe
-    window.location.href = data.url;
-  })
-  .catch(() => {
-    alert("Payment failed ❌");
+  .then(r=>r.json())
+  .then(d=>{
+    window.location.href=d.url;
   });
 }
 </script>
-
-</body>
-</html>

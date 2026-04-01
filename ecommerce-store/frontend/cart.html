@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f9fafb;
+    }
+
+    .item {
+      background: white;
+      margin: 10px auto;
+      padding: 10px;
+      width: 250px;
+      border-radius: 10px;
+    }
+
+    button {
+      background: #2563EB;
+      color: white;
+      padding: 8px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🛒 Your Cart</h1>
+
+<div id="cart"></div>
+
+<h2 id="total"></h2>
+
+<button onclick="checkout()">Proceed to Checkout</button>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let container = document.getElementById("cart");
+
+let total = 0;
+
+cart.forEach(item => {
+  total += item.price;
+
+  container.innerHTML += `
+    <div class="item">
+      <p>${item.name}</p>
+      <p>$${item.price}</p>
+    </div>
+  `;
+});
+
+document.getElementById("total").innerText = "Total: $" + total;
+
+function checkout() {
+  alert("Next step: checkout system 🔥");
+}
+</script>
+
+</body>
+</html>

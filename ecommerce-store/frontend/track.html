@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Track Order</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f9fafb;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 10px;
+    }
+
+    button {
+      padding: 10px;
+      background: #2563EB;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>📦 Track Your Order</h1>
+
+<input id="orderId" placeholder="Enter Order ID">
+<br>
+<button onclick="trackOrder()">Track</button>
+
+<div id="result"></div>
+
+<script>
+const API = "https://ecommerce-store-production-cca7.up.railway.app";
+
+function trackOrder() {
+  let id = document.getElementById("orderId").value;
+
+  fetch(API + "/orders/" + id)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerHTML = `
+        <p>Status: ${data.order_status}</p>
+        <p>Total: $${data.total}</p>
+        <p>Type: ${data.order_type}</p>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText = "Order not found";
+    });
+}
+</script>
+
+</body>
+</html>

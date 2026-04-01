@@ -40,3 +40,6 @@ def get_order(id: int):
         if o["id"] == id:
             return o
     return {"error": "Not found"}
+
+def send_email(to, subject, message):
+    print(f"Email sent to {to}: {subject}")

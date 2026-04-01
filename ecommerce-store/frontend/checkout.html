@@ -44,12 +44,6 @@
 <input id="address" placeholder="Address (for delivery only)">
 
 <!-- ✅ Payment only for pickup -->
-<div id="paymentBox" style="display:none;">
-  <select id="payment">
-    <option value="cash">Pay at Store</option>
-    <option value="stripe">Online Payment</option>
-  </select>
-</div>
 
 <button onclick="placeOrder()">Place Order</button>
 
@@ -70,7 +64,6 @@ function togglePayment() {
 function placeOrder() {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // ❌ Prevent empty cart
   if (cart.length === 0) {
     alert("Your cart is empty ❌");
     return;
@@ -82,7 +75,6 @@ function placeOrder() {
   let address = document.getElementById("address").value;
   let type = document.getElementById("type").value;
 
-  // ❌ Basic validation
   if (!name || !phone || !email) {
     alert("Please fill all required fields ❌");
     return;
@@ -93,28 +85,18 @@ function placeOrder() {
     return;
   }
 
-  // ✅ Payment logic
-  let paymentMethod = "none";
-
-  if (type === "pickup") {
-    paymentMethod = document.getElementById("payment").value;
-  }
-
   let order = {
-    id: 0,
     customer_name: name,
     phone: phone,
     email: email,
     address: address,
     items: cart,
     total: cart.reduce((sum, i) => sum + i.price, 0),
-    order_type: type,
-    payment_method: paymentMethod,
-    payment_status: "",
-    order_status: "pending"
+    order_type: type
   };
 
-  fetch(API + "/orders", {
+  // 🔥 IMPORTANT CHANGE (STRIPE FLOW)
+  fetch("https://ecommerce-store-production-cca7.up.railway.app/create-checkout-session", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -123,14 +105,11 @@ function placeOrder() {
   })
   .then(res => res.json())
   .then(data => {
-    alert("Order placed! ID: " + data.order_id);
-    localStorage.removeItem("cart");
-
-    // ✅ redirect to tracking
-    window.location.href = "track.html";
+    // 🚀 Redirect to Stripe
+    window.location.href = data.url;
   })
   .catch(() => {
-    alert("Something went wrong ❌");
+    alert("Payment failed ❌");
   });
 }
 </script>

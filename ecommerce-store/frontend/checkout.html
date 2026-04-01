@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f9fafb;
+    }
+
+    input, select {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 250px;
+    }
+
+    button {
+      background: #2563EB;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>Checkout</h1>
+
+<input id="name" placeholder="Your Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+
+<select id="type">
+  <option value="delivery">Delivery</option>
+  <option value="pickup">Store Pickup</option>
+</select>
+
+<input id="address" placeholder="Address (for delivery only)">
+
+<select id="payment">
+  <option value="cash">Cash</option>
+  <option value="stripe">Stripe</option>
+</select>
+
+<button onclick="placeOrder()">Place Order</button>
+
+<script>
+const API = "https://ecommerce-store-production-cca7.up.railway.app";
+
+function placeOrder() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let order = {
+    id: 0,
+    customer_name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    email: document.getElementById("email").value,
+    address: document.getElementById("address").value,
+    items: cart,
+    total: cart.reduce((sum, i) => sum + i.price, 0),
+    order_type: document.getElementById("type").value,
+    payment_method: document.getElementById("payment").value,
+    payment_status: "",
+    order_status: ""
+  };
+
+  fetch(API + "/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(order)
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert("Order placed! ID: " + data.order_id);
+    localStorage.removeItem("cart");
+  });
+}
+</script>
+
+</body>
+</html>

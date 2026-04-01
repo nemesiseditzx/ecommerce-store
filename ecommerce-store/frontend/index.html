@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Store</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f9fafb;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 20px;
+    }
+
+    #products {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      width: 200px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      background: #2563EB;
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🛍️ My Store</h1>
+
+<div id="products"></div>
+
+<script>
+const API = "https://ecommerce-store-production-cca7.up.railway.app";
+
+async function loadProducts() {
+  const res = await fetch(API + "/products");
+  const data = await res.json();
+
+  const container = document.getElementById("products");
+
+  data.forEach(p => {
+    container.innerHTML += `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>$${p.price}</p>
+        <button onclick="addToCart('${p.name}', ${p.price})">
+          Add to Cart
+        </button>
+      </div>
+    `;
+  });
+}
+
+function addToCart(name, price) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  cart.push({ name, price });
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Added to cart ✅");
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

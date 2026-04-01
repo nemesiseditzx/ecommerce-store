@@ -1,18 +1,29 @@
-<h1>Track</h1>
+<h1>Admin</h1>
 
-<input id="id">
-<button onclick="t()">Track</button>
-
-<div id="r"></div>
+<div id="o"></div>
 
 <script>
 const API="https://your-railway-url";
 
-function t(){
-  fetch(API+"/orders/"+id.value)
-  .then(r=>r.json())
-  .then(d=>{
-    r.innerHTML=`Status: ${d.order_status}`;
+async function load(){
+  let r=await fetch(API+"/orders");
+  let d=await r.json();
+
+  d.forEach(x=>{
+    o.innerHTML+=`
+      <div>
+        <p>ID ${x.id}</p>
+        <p>${x.order_status}</p>
+        <button onclick="u(${x.id})">Ship</button>
+      </div>
+    `;
   });
 }
+
+function u(id){
+  fetch(API+"/orders/"+id+"?status=shipped",{method:"PUT"})
+  .then(()=>alert("updated"));
+}
+
+load();
 </script>

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import stripe
-from config import STRIPE_SECRET_KEY, FRONTEND_URL
+from config import STRIPE_SECRET_KEY, https://ecommerce-store-coral-alpha.vercel.app/
 
 app = FastAPI()
 

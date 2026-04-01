@@ -70,9 +70,30 @@ function togglePayment() {
 function placeOrder() {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+  // ❌ Prevent empty cart
+  if (cart.length === 0) {
+    alert("Your cart is empty ❌");
+    return;
+  }
+
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let email = document.getElementById("email").value;
+  let address = document.getElementById("address").value;
   let type = document.getElementById("type").value;
 
-  // ✅ FIXED PAYMENT LOGIC
+  // ❌ Basic validation
+  if (!name || !phone || !email) {
+    alert("Please fill all required fields ❌");
+    return;
+  }
+
+  if (type === "delivery" && !address) {
+    alert("Please enter delivery address ❌");
+    return;
+  }
+
+  // ✅ Payment logic
   let paymentMethod = "none";
 
   if (type === "pickup") {
@@ -81,16 +102,16 @@ function placeOrder() {
 
   let order = {
     id: 0,
-    customer_name: document.getElementById("name").value,
-    phone: document.getElementById("phone").value,
-    email: document.getElementById("email").value,
-    address: document.getElementById("address").value,
+    customer_name: name,
+    phone: phone,
+    email: email,
+    address: address,
     items: cart,
     total: cart.reduce((sum, i) => sum + i.price, 0),
     order_type: type,
     payment_method: paymentMethod,
     payment_status: "",
-    order_status: ""
+    order_status: "pending"
   };
 
   fetch(API + "/orders", {
@@ -104,6 +125,12 @@ function placeOrder() {
   .then(data => {
     alert("Order placed! ID: " + data.order_id);
     localStorage.removeItem("cart");
+
+    // ✅ redirect to tracking
+    window.location.href = "track.html";
+  })
+  .catch(() => {
+    alert("Something went wrong ❌");
   });
 }
 </script>

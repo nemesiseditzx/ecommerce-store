@@ -1,13 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import stripe
+from config import STRIPE_SECRET_KEY, FRONTEND_URL
 
 app = FastAPI()
 
-# ✅ STRIPE KEY (REPLACE THIS)
-stripe.api_key = "YOUR_STRIPE_SECRET_KEY"
+stripe.api_key = STRIPE_SECRET_KEY
 
-# ✅ CORS (allow frontend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,78 +15,63 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -------------------------------
-# BASIC ROUTES
-# -------------------------------
-
-@app.get("/")
-def home():
-    return {"message": "Ecommerce API running 🚀"}
-
+# ---------------- PRODUCTS ----------------
 @app.get("/products")
-def get_products():
+def products():
     return [
         {"id": 1, "name": "Perfume A", "price": 50},
         {"id": 2, "name": "Perfume B", "price": 70},
         {"id": 3, "name": "Perfume C", "price": 90}
     ]
 
-# -------------------------------
-# ORDER SYSTEM (TEMP STORAGE)
-# -------------------------------
-
+# ---------------- ORDERS ----------------
 orders = []
 
 @app.post("/orders")
-def create_order(order: dict):
+def create(order: dict):
     order_id = len(orders) + 1
     order["id"] = order_id
     order["order_status"] = "pending"
-
+    order["payment_status"] = "unpaid"
     orders.append(order)
-
     return {"order_id": order_id}
 
+@app.get("/orders")
+def all_orders():
+    return orders
+
 @app.get("/orders/{id}")
-def get_order(id: int):
+def one(id: int):
     for o in orders:
         if o["id"] == id:
             return o
-    return {"error": "Not found"}
+    return {"error": "not found"}
 
-# -------------------------------
-# STRIPE PAYMENT
-# -------------------------------
+@app.put("/orders/{id}")
+def update(id: int, status: str):
+    for o in orders:
+        if o["id"] == id:
+            o["order_status"] = status
+            return {"message": "updated"}
+    return {"error": "not found"}
 
-@app.post("/create-checkout-session")
-def create_checkout(order: dict):
+# ---------------- STRIPE ----------------
+@app.post("/checkout")
+def checkout(order: dict):
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
-        line_items=[
-            {
-                "price_data": {
-                    "currency": "usd",
-                    "product_data": {
-                        "name": "Order Payment",
-                    },
-                    "unit_amount": int(order["total"] * 100),
-                },
-                "quantity": 1,
-            }
-        ],
+        line_items=[{
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": "Order Payment"},
+                "unit_amount": int(order["total"] * 100),
+            },
+            "quantity": 1,
+        }],
         mode="payment",
-
-        # ✅ CHANGE THIS TO YOUR VERCEL URL
-        success_url="https://ecommerce-store-coral-alpha.vercel.app/track.html",
-        cancel_url="https://ecommerce-store-coral-alpha.vercel.app/",
+        success_url=f"{FRONTEND_URL}/track.html",
+        cancel_url=f"{FRONTEND_URL}/",
     )
 
     return {"url": session.url}
-
-# -------------------------------
-# EMAIL (SIMULATION)
-# -------------------------------
-
-def send_email(to, subject, message):
-    print(f"Email sent to {to}: {subject}")

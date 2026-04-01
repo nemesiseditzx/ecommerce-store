@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import stripe
-from config import STRIPE_SECRET_KEY, https://ecommerce-store-coral-alpha.vercel.app/
+from config import STRIPE_SECRET_KEY, FRONTEND_URL
 
 app = FastAPI()
 
@@ -70,8 +70,8 @@ def checkout(order: dict):
             "quantity": 1,
         }],
         mode="payment",
-        success_url=f"{FRONTEND_URL}/track.html",
-        cancel_url=f"{FRONTEND_URL}/",
+        success_url=f"{https://ecommerce-store-coral-alpha.vercel.app/}/track.html",
+        cancel_url=f"{https://ecommerce-store-coral-alpha.vercel.app/}/",
     )
 
     return {"url": session.url}

@@ -35,25 +35,49 @@
 <input id="phone" placeholder="Phone">
 <input id="email" placeholder="Email">
 
-<select id="type">
+<!-- ✅ ONLY ONE TYPE SELECT -->
+<select id="type" onchange="togglePayment()">
   <option value="delivery">Delivery</option>
   <option value="pickup">Store Pickup</option>
 </select>
 
 <input id="address" placeholder="Address (for delivery only)">
 
-<select id="payment">
-  <option value="cash">Cash</option>
-  <option value="stripe">Stripe</option>
-</select>
+<!-- ✅ Payment only for pickup -->
+<div id="paymentBox" style="display:none;">
+  <select id="payment">
+    <option value="cash">Pay at Store</option>
+    <option value="stripe">Online Payment</option>
+  </select>
+</div>
 
 <button onclick="placeOrder()">Place Order</button>
 
 <script>
 const API = "https://ecommerce-store-production-cca7.up.railway.app";
 
+function togglePayment() {
+  const type = document.getElementById("type").value;
+  const paymentBox = document.getElementById("paymentBox");
+
+  if (type === "pickup") {
+    paymentBox.style.display = "block";
+  } else {
+    paymentBox.style.display = "none";
+  }
+}
+
 function placeOrder() {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let type = document.getElementById("type").value;
+
+  // ✅ FIXED PAYMENT LOGIC
+  let paymentMethod = "none";
+
+  if (type === "pickup") {
+    paymentMethod = document.getElementById("payment").value;
+  }
 
   let order = {
     id: 0,
@@ -63,8 +87,8 @@ function placeOrder() {
     address: document.getElementById("address").value,
     items: cart,
     total: cart.reduce((sum, i) => sum + i.price, 0),
-    order_type: document.getElementById("type").value,
-    payment_method: document.getElementById("payment").value,
+    order_type: type,
+    payment_method: paymentMethod,
     payment_status: "",
     order_status: ""
   };

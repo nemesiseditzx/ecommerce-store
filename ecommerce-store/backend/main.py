@@ -10,5 +10,6 @@ def home():
 def get_products():
     return [
         {"id": 1, "name": "Perfume A", "price": 50},
-        {"id": 2, "name": "Perfume B", "price": 70}
+        {"id": 2, "name": "Perfume B", "price": 70},
+        {"id": 3, "name": "Perfume C", "price": 90}
     ]
